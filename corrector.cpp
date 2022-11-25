@@ -1,19 +1,52 @@
-// corrector.cpp : Este archivo contiene la función "main". La ejecución del programa comienza y termina ahí.
-//
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include "CORRECTOR.h"
+#define MAXPALABRAS 10000
 
-#include <iostream>
+void Diccionario(char* szNombre, char szPalabras[][TAMTOKEN], int iEstadisticas[], int& iNumElementos) {
 
-int main()
-{
-    std::cout << "Hello World!\n";
+	FILE* fp;
+	char szWords[MAXPALABRAS][TAMTOKEN];
+	int szsimbolo, o, k, end, conta;
+	char szcontrol[TAMTOKEN];
+
+	fopen_s(&fp, szNombre, "r");
+
+	szsimbolo = fgetc(fp);
+	iNumElementos = 0;
+	k = 0;
+
+	while (feof(fp) == 0) {
+		if (!((szsimbolo == 9) || (szsimbolo == 10) || (szsimbolo == 13) || (szsimbolo == 32) || (szsimbolo == 40) || (szsimbolo == 41) || (szsimbolo == 44) || (szsimbolo == 46) || (szsimbolo == 59))) {
+			szWords[iNumElementos][k] = towlower((char)szsimbolo);
+			szsimbolo = fgetc(fp);
+			k++;
+		}
+		else {
+			
+			if (k > 0) {
+				
+				szWords[iNumElementos][k] = '\0';
+				iEstadisticas[iNumElementos] = 1;
+				
+				if (iNumElementos > 0) {
+					
+					for(o=0; 0<iNumElementos; o++)
+						if (strcmp(szWords[o], szWords[iNumElementos]) == 0) {
+
+							iEstadisticas[o] = iEstadisticas[o]++;
+							o = iNumElementos;
+							iNumElementos = iNumElementos--;
+						}
+				}
+				iNumElementos++;
+				k = 0;
+			}
+			szsimbolo = fgetc(fp);
+		}
+	}
+	fclose(fp);
+
+
 }
-
-// Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar
-// Depurar programa: F5 o menú Depurar > Iniciar depuración
-
-// Sugerencias para primeros pasos: 1. Use la ventana del Explorador de soluciones para agregar y administrar archivos
-//   2. Use la ventana de Team Explorer para conectar con el control de código fuente
-//   3. Use la ventana de salida para ver la salida de compilación y otros mensajes
-//   4. Use la ventana Lista de errores para ver los errores
-//   5. Vaya a Proyecto > Agregar nuevo elemento para crear nuevos archivos de código, o a Proyecto > Agregar elemento existente para agregar archivos de código existentes al proyecto
-//   6. En el futuro, para volver a abrir este proyecto, vaya a Archivo > Abrir > Proyecto y seleccione el archivo .sln
